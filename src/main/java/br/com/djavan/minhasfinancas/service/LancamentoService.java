@@ -1,6 +1,7 @@
 package br.com.djavan.minhasfinancas.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import br.com.djavan.minhasfinancas.model.entity.Lancamento;
 import br.com.djavan.minhasfinancas.model.enums.StatusLancamento;
@@ -19,4 +20,6 @@ public interface LancamentoService {
 	void atualizarStatus(Lancamento lancamento, StatusLancamento status);
 	
 	void validarLancamento(Lancamento lancamento);
+	
+	Optional<Lancamento> obterPorId (Long id);
 }
