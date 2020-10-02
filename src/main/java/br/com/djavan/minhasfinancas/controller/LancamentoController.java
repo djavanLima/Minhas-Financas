@@ -25,21 +25,20 @@ import br.com.djavan.minhasfinancas.model.enums.StatusLancamento;
 import br.com.djavan.minhasfinancas.model.enums.TipoLancamento;
 import br.com.djavan.minhasfinancas.service.LancamentoService;
 import br.com.djavan.minhasfinancas.service.UsuarioService;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/lancamento")
+@RequiredArgsConstructor
 public class LancamentoController {
 
 //	@Autowired
-	private LancamentoService service;
+	private final LancamentoService service;
 	//ou adiciono construtor
 	
-	private UsuarioService usuarioService;
+	private final UsuarioService usuarioService;
 	
-	public LancamentoController(LancamentoService service)
-	{
-		this.service=service;
-	}
+	
 	
 	@PostMapping
 	public ResponseEntity salvar(@RequestBody LancamentoDto dto)

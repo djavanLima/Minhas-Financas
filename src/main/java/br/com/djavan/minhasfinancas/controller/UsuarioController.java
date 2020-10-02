@@ -12,18 +12,16 @@ import br.com.djavan.minhasfinancas.api.dto.UsuarioDto;
 import br.com.djavan.minhasfinancas.exception.RegraNegocioException;
 import br.com.djavan.minhasfinancas.model.entity.Usuario;
 import br.com.djavan.minhasfinancas.service.UsuarioService;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/usuario")
+@RequiredArgsConstructor
 public class UsuarioController {
 
-	private UsuarioService service;
+	private final  UsuarioService service;
 	
-	public UsuarioController(UsuarioService service) {
-		
-		this.service=service;
-		
-	}
+	
 	@PostMapping("/autenticar")
 	public ResponseEntity autenticar(@RequestBody UsuarioDto dto) {
 		try {
