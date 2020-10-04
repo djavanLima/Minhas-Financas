@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-
+import br.com.djavan.minhasfinancas.api.dto.AtualizaStatusDto;
 import br.com.djavan.minhasfinancas.api.dto.LancamentoDto;
 import br.com.djavan.minhasfinancas.exception.RegraNegocioException;
 import br.com.djavan.minhasfinancas.model.entity.Lancamento;
@@ -68,14 +68,15 @@ public class LancamentoController {
 		lancamentoFiltro.setAno(ano);
 		
 		Optional<Usuario> usuario = usuarioService.obterPorId(idUsuario);
-		if(usuario.isPresent()) {
-			return ResponseEntity.badRequest().body("Não foi possivel realizar a consulta. Usuário não encontrado para o id informado.");
+		if(!usuario.isPresent()) {
+			return ResponseEntity.badRequest()
+					.body("Não foi possivel realizar a consulta. Usuário não encontrado para o id informado.");
 		}
 		else
 		{
 			lancamentoFiltro.setUsuario(usuario.get());
 		}
-		List<Lancamento> lancamentos =service.buscar(lancamentoFiltro);
+		List<Lancamento> lancamentos = service.buscar(lancamentoFiltro);
 		return ResponseEntity.ok(lancamentos);
 	}
 	
@@ -101,6 +102,31 @@ public class LancamentoController {
 			}
 		}).orElseGet(()->
 		new ResponseEntity("Lancamento não encontrado na base de dados", HttpStatus.BAD_REQUEST));
+	}
+	
+	
+	
+	//atualizar status
+	@PutMapping("{id}/atualiza-status")
+	public ResponseEntity atualizarStatus(@PathVariable("id") Long id ,@RequestBody AtualizaStatusDto dto) {
+		return service.obterPorId(id).map(entity ->{
+			 StatusLancamento statusSelecionado = StatusLancamento.valueOf(dto.getStatus());
+			 
+			 
+			 if(statusSelecionado == null) {
+				 return ResponseEntity.badRequest().body("Não foi possivel atualizar o status do lançamento, envie um status válido");
+			 }
+			 try {
+				 entity.setStatus(statusSelecionado);
+				 service.atualizar(entity);
+				 return ResponseEntity.ok(entity);
+			 }catch(RegraNegocioException e) {
+				 return ResponseEntity.badRequest().body(e.getMessage());
+			 }
+			
+		}).orElseGet( () -> 
+		new ResponseEntity("Não encontrado na base de dados.", HttpStatus.BAD_REQUEST));
+		
 	}
 	
 	
@@ -137,9 +163,12 @@ public class LancamentoController {
 		
 		
 		lancamento.setUsuario(usuario);
+		if( dto.getTipo() != null) {
 		lancamento.setTipo(TipoLancamento.valueOf(dto.getTipo()));
+		}
+		if(dto.getStatus() != null) {
 		lancamento.setStatus(StatusLancamento.valueOf(dto.getStatus()));
-		
+		}
 		return lancamento;
 				
 	}
