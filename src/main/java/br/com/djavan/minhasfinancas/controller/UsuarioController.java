@@ -1,5 +1,8 @@
 package br.com.djavan.minhasfinancas.controller;
 
+import java.math.BigDecimal;
+import java.util.Optional;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import br.com.djavan.minhasfinancas.api.dto.UsuarioDto;
 import br.com.djavan.minhasfinancas.exception.RegraNegocioException;
 import br.com.djavan.minhasfinancas.model.entity.Usuario;
+import br.com.djavan.minhasfinancas.service.LancamentoService;
 import br.com.djavan.minhasfinancas.service.UsuarioService;
 import lombok.RequiredArgsConstructor;
 
@@ -21,7 +25,7 @@ import lombok.RequiredArgsConstructor;
 public class UsuarioController {
 
 	private final  UsuarioService service;
-	
+	private final LancamentoService lancamentoService;
 	
 	@PostMapping("/autenticar")
 	public ResponseEntity autenticar(@RequestBody UsuarioDto dto) {
@@ -57,7 +61,14 @@ public class UsuarioController {
 	@GetMapping("{id}/saldo")
 	public ResponseEntity obterSaldo(@PathVariable("id") Long id)
 	{
-		return null;
+		Optional<Usuario> usuario =  service.obterPorId(id);
+		if(!usuario.isPresent()) {
+			
+		}
+		
+		BigDecimal saldo = lancamentoService.obterSaldoPorUsuario(id);
+		
+		return ResponseEntity.ok(saldo);
 	}
 	
 	
